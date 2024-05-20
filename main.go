@@ -2,35 +2,19 @@ package main
 
 import (
 	"fmt"
-	"time"
+	"log"
+	"net/http"
 )
 
-func handleRequests(reqs <-chan request) {
-	for req := range reqs {
-		handleRequest(req)
-	}
-}
-
-// don't touch below this line
-
-type request struct {
-	path string
-}
+const PORT = ":8080"
 
 func main() {
-	reqs := make(chan request, 100)
-	go handleRequests(reqs)
-	for i := 0; i < 4; i++ {
-		reqs <- request{path: fmt.Sprintf("/path/%d", i)}
-		time.Sleep(25 * time.Millisecond)
+	mux := http.NewServeMux()
+	server := &http.Server{Handler: mux, Addr: PORT}
+
+	fmt.Printf("server started at http://localhost:%s\n", PORT)
+	if err := server.ListenAndServe(); err != nil {
+		log.Fatalf("Failed to start the server: %v", err)
 	}
 
-	time.Sleep(1 * time.Second)
-	fmt.Println("1 second passed, killing server")
-}
-
-func handleRequest(req request) {
-	fmt.Println("Handling request for", req.path)
-	time.Sleep(500 * time.Millisecond)
-	fmt.Println("Done with request for", req.path)
 }

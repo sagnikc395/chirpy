@@ -1,3 +1,3 @@
 ## chirpy 
 
-a twitter backend service written in Go 
+learning building web servers with golang 
